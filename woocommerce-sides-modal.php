@@ -14,6 +14,7 @@
 if (!defined('ABSPATH'))
     exit;
 
+// Définition des constantes
 define('WSM_VERSION', '1.0.0');
 define('WSM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WSM_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -28,7 +29,7 @@ register_activation_hook(__FILE__, function () {
     add_option(WSM_OPTIONS_KEY, $default_options);
 });
 
-// Ajout du lien Settings
+// Ajout du lien Settings dans la liste des plugins
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
     $settings_link = '<a href="' . admin_url('admin.php?page=wc-sides-modal') . '">Réglages</a>';
     array_unshift($links, $settings_link);
@@ -53,11 +54,14 @@ function wsm_init()
     if (!wsm_check_woocommerce())
         return;
 
+    // Inclusion des fichiers nécessaires
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-admin.php';
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-loader.php';
 
+    // Initialisation du chargeur principal
     $loader = new WSM_Loader();
     $loader->run();
 }
 
+// Hook pour initialiser le plugin après le chargement des plugins
 add_action('plugins_loaded', 'wsm_init');
