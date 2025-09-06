@@ -16,6 +16,8 @@ class WSM_Loader {
         add_action('wp_footer', array($this, 'add_modal_markup'));
         add_action('wp_ajax_get_product_category', array($this, 'get_product_category'));
         add_action('wp_ajax_nopriv_get_product_category', array($this, 'get_product_category'));
+        add_action('wp_ajax_wsm_check_categories', array($this, 'check_categories'));
+        add_action('wp_ajax_nopriv_wsm_check_categories', array($this, 'check_categories'));
     }
 
     public function enqueue_scripts() {

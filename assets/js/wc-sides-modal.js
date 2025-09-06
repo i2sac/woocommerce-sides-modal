@@ -19,7 +19,7 @@
 
         (async () => {
             try {
-                const response = await fetch('/wp-admin/admin-ajax.php', {
+                const response = await fetch(wcSidesModal.ajaxurl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -47,6 +47,9 @@
                     $('#wc-sides-modal').fadeIn();
                     setBodyOverflow(true);
                 }
+                
+                // Réinitialisation pour le prochain produit
+                lastClickedProductId = null;
             } catch (error) {
                 console.error('Erreur lors de la récupération des catégories :', error);
             }
