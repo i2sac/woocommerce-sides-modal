@@ -1,36 +1,29 @@
 # WooCommerce Sides Modal
 
-Affiche un modal personnalisé lorsqu’un produit ajouté au panier appartient à certaines catégories WooCommerce.
-
-## 🔗 Plugin URI
-[https://github.com/i2sac/woocommerce-sides-modal](https://github.com/i2sac/woocommerce-sides-modal)
-
-## 🧑‍💻 Auteur
-**Louis Isaac Diouf**  
-GitHub: [https://github.com/i2sac](https://github.com/i2sac)
+Affiche un modal personnalisé lorsqu'un produit ajouté au panier appartient à certaines catégories WooCommerce.
 
 ## 📦 Fonctionnalités
 
-- Détecte l’ajout d’un produit au panier via AJAX
-- Vérifie si le produit appartient à l’une des catégories suivantes :
-  - `sides`
-  - `senegalese meals`
-  - `african meals`
-- Affiche un modal contenant le bloc `[html_block id="29271"]`
+- Détecte l'ajout d'un produit au panier via AJAX
+- Interface d'administration pour configurer :
+  - Les catégories WooCommerce à surveiller
+  - Le shortcode du bloc HTML à afficher
 - Modal responsive, accessible, et personnalisable
 
 ## 📁 Installation
 
 1. Téléchargez ou clonez le dépôt dans `wp-content/plugins/woocommerce-sides-modal`
-2. Activez le plugin via l’interface WordPress
-3. Assurez-vous que le bloc HTML `[html_block id="29271"]` existe
+2. Activez le plugin via l'interface WordPress
+3. Configurez le plugin dans Réglages > WC Sides Modal
 
-## 🛠️ Personnalisation
+## 🛠️ Configuration
 
-- Pour modifier les catégories ciblées, éditez le tableau dans `woocommerce-sides-modal.js`
-- Pour changer le contenu du modal, modifiez le shortcode dans `woocommerce-sides-modal.php`
+1. Allez dans Réglages > WC Sides Modal
+2. Entrez les slugs des catégories WooCommerce à surveiller (séparés par des virgules)
+3. Entrez le shortcode du bloc HTML à afficher dans le modal
+4. Sauvegardez les modifications
 
 ## 📜 Licence
 
 Ce plugin est distribué sous la licence **GPL 3.0**.  
-Voir [LICENSE](https://www.gnu.org/licenses/gpl-3.0.html) pour plus d’informations.
+Voir [LICENSE](https://www.gnu.org/licenses/gpl-3.0.html) pour plus d'informations.
