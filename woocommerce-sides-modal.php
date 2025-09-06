@@ -14,6 +14,7 @@
 if (!defined('ABSPATH'))
     exit;
 
+// Définition des constantes
 define('WSM_VERSION', '1.0.0');
 define('WSM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WSM_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -25,9 +26,8 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), function($links) 
     return $links;
 });
 
-// Vérification de WooCommerce
-function wsm_check_woocommerce()
-{
+// Vérification de la présence de WooCommerce
+function wsm_check_woocommerce() {
     if (!class_exists('WooCommerce')) {
         add_action('admin_notices', function () {
             echo '<div class="error"><p>WooCommerce Sides Modal nécessite WooCommerce pour fonctionner.</p></div>';
@@ -38,16 +38,18 @@ function wsm_check_woocommerce()
 }
 
 // Initialisation du plugin
-function wsm_init()
-{
+function wsm_init() {
     if (!wsm_check_woocommerce())
         return;
 
+    // Inclusion des fichiers nécessaires
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-admin.php';
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-loader.php';
 
+    // Initialisation du chargeur principal
     $loader = new WSM_Loader();
     $loader->run();
 }
 
+// Hook pour initialiser le plugin après le chargement des plugins
 add_action('plugins_loaded', 'wsm_init');

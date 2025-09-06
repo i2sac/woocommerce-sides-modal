@@ -12,17 +12,15 @@ class WSM_Loader {
     }
 
     public function run() {
-        // Admin
         if (is_admin()) {
             new WSM_Admin();
         }
 
-        // Front
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'add_modal_markup'));
         add_filter('woocommerce_add_to_cart_fragments', array($this, 'cart_fragment_modal'));
-        add_action('wp_ajax_wsm_get_product_category', array($this, 'get_product_category'));
-        add_action('wp_ajax_nopriv_wsm_get_product_category', array($this, 'get_product_category'));
+        add_action('wp_ajax_wsm_check_product_categories', array($this, 'check_product_categories'));
+        add_action('wp_ajax_nopriv_wsm_check_product_categories', array($this, 'check_product_categories'));
     }
 
     public function enqueue_scripts() {
@@ -41,12 +39,16 @@ class WSM_Loader {
             true
         );
 
+        $categories = array_map('trim', explode(',', $this->options['categories']));
+
         wp_localize_script('wc-sides-modal', 'wcSidesModal', array(
+            'categories' => $categories,
+            'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wsm-ajax-nonce')
         ));
     }
 
-    public function get_product_category() {
+    public function check_product_categories() {
         check_ajax_referer('wsm-ajax-nonce', 'nonce');
         
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
@@ -55,18 +57,14 @@ class WSM_Loader {
             return;
         }
 
-        // Récupération des catégories du produit
-        $product_categories = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'slugs'));
-        
-        if (is_wp_error($product_categories)) {
+        $product = wc_get_product($product_id);
+        if (!$product) {
             wp_send_json_error();
             return;
         }
 
-        // Récupération et nettoyage des catégories cibles
         $target_categories = array_map('trim', explode(',', $this->options['categories']));
-        
-        // Vérification de l'intersection
+        $product_categories = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'slugs'));
         $found = array_intersect($target_categories, $product_categories);
         
         wp_send_json_success(array(
