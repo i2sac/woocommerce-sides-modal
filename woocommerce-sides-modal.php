@@ -31,7 +31,7 @@ register_activation_hook(__FILE__, function () {
 
 // Ajout du lien Settings dans la liste des plugins
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-    $settings_link = '<a href="' . admin_url('admin.php?page=wc-sides-modal') . '">Réglages</a>';
+    $settings_link = '<a href="' . admin_url('admin.php?page=wc-sides-modal-settings') . '">Réglages</a>';
     array_unshift($links, $settings_link);
     return $links;
 });
@@ -57,6 +57,10 @@ function wsm_init()
     // Inclusion des fichiers nécessaires
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-admin.php';
     require_once WSM_PLUGIN_DIR . 'includes/class-wsm-loader.php';
+
+    // Initialisation de l'admin
+    $admin = new WSM_Admin();
+    $admin->init();
 
     // Initialisation du chargeur principal
     $loader = new WSM_Loader();
