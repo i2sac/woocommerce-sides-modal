@@ -7,6 +7,10 @@ class WSM_Admin {
     public function __construct() {
         add_action('admin_menu', array($this, 'add_plugin_page'));
         add_action('admin_init', array($this, 'page_init'));
+        $this->options = get_option(WSM_OPTIONS_KEY, array(
+            'categories' => '',
+            'shortcode' => '[html_block id=""]'
+        ));
     }
 
     public function add_plugin_page() {
@@ -20,10 +24,6 @@ class WSM_Admin {
     }
 
     public function create_admin_page() {
-        $this->options = get_option('wsm_settings', array(
-            'categories' => '',
-            'shortcode' => '[html_block id=""]'
-        ));
         ?>
         <div class="wrap">
             <h1>WooCommerce Sides Modal</h1>
@@ -41,7 +41,7 @@ class WSM_Admin {
     public function page_init() {
         register_setting(
             'wsm_option_group',
-            'wsm_settings',
+            WSM_OPTIONS_KEY,
             array($this, 'sanitize')
         );
 
@@ -89,7 +89,8 @@ class WSM_Admin {
 
     public function categories_callback() {
         printf(
-            '<input type="text" id="categories" name="wsm_settings[categories]" value="%s" class="regular-text" />',
+            '<input type="text" id="categories" name="%s[categories]" value="%s" class="regular-text" />',
+            WSM_OPTIONS_KEY,
             esc_attr($this->options['categories'])
         );
         echo '<p class="description">Entrez les slugs des catégories séparés par des virgules (ex: senegalese-meals,african-meals)</p>';
@@ -97,7 +98,8 @@ class WSM_Admin {
 
     public function shortcode_callback() {
         printf(
-            '<input type="text" id="shortcode" name="wsm_settings[shortcode]" value="%s" class="regular-text" />',
+            '<input type="text" id="shortcode" name="%s[shortcode]" value="%s" class="regular-text" />',
+            WSM_OPTIONS_KEY,
             esc_attr($this->options['shortcode'])
         );
         echo '<p class="description">Entrez le shortcode complet (ex: [html_block id="1234"])</p>';

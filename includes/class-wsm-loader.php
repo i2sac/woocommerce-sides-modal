@@ -5,22 +5,17 @@ class WSM_Loader {
     private $options;
 
     public function __construct() {
-        $this->options = get_option('wsm_settings', array(
+        $this->options = get_option(WSM_OPTIONS_KEY, array(
             'categories' => '',
             'shortcode' => '[html_block id=""]'
         ));
     }
 
     public function run() {
-        if (is_admin()) {
-            new WSM_Admin();
-        }
-
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'add_modal_markup'));
-        add_filter('woocommerce_add_to_cart_fragments', array($this, 'cart_fragment_modal'));
-        add_action('wp_ajax_wsm_check_product_categories', array($this, 'check_product_categories'));
-        add_action('wp_ajax_nopriv_wsm_check_product_categories', array($this, 'check_product_categories'));
+        add_action('wp_ajax_get_product_category', array($this, 'get_product_category'));
+        add_action('wp_ajax_nopriv_get_product_category', array($this, 'get_product_category'));
     }
 
     public function enqueue_scripts() {
@@ -40,36 +35,28 @@ class WSM_Loader {
         );
 
         $categories = array_map('trim', explode(',', $this->options['categories']));
-
         wp_localize_script('wc-sides-modal', 'wcSidesModal', array(
-            'categories' => $categories,
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wsm-ajax-nonce')
+            'categories' => array_map('strtolower', $categories)
         ));
     }
 
-    public function check_product_categories() {
-        check_ajax_referer('wsm-ajax-nonce', 'nonce');
-        
+    public function get_product_category() {
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+        
         if (!$product_id) {
             wp_send_json_error();
             return;
         }
 
-        $product = wc_get_product($product_id);
-        if (!$product) {
-            wp_send_json_error();
-            return;
-        }
-
-        $target_categories = array_map('trim', explode(',', $this->options['categories']));
-        $product_categories = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'slugs'));
-        $found = array_intersect($target_categories, $product_categories);
+        $categories = array();
+        $terms = get_the_terms($product_id, 'product_cat');
         
-        wp_send_json_success(array(
-            'show_modal' => !empty($found)
-        ));
+        if ($terms && !is_wp_error($terms)) {
+            $categories = wp_list_pluck($terms, 'slug');
+        }
+        
+        echo implode(',', $categories);
+        wp_die();
     }
 
     public function add_modal_markup() {
@@ -83,12 +70,5 @@ class WSM_Loader {
             </div>
         </div>
         <?php
-    }
-
-    public function cart_fragment_modal($fragments) {
-        ob_start();
-        $this->add_modal_markup();
-        $fragments['div.wc-sides-modal'] = ob_get_clean();
-        return $fragments;
     }
 }
