@@ -5,7 +5,7 @@ if (!defined('ABSPATH'))
 class WSM_Admin
 {
     private $options;
-    private $capability = 'manage_woocommerce'; // Permission WooCommerce requise
+    private $capability = 'edit_posts'; // Permission minimale requise
 
     public function __construct()
     {
