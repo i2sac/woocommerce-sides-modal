@@ -1,19 +1,41 @@
 (function($) {
     'use strict';
 
-    // Ouverture du modal lors de l'ajout au panier
-    $(document).on('added_to_cart', function(event, fragments, cart_hash, button) {
-        let $product = button.closest('.product');
-        let productClasses = $product.attr('class').split(' ');
-        
-        // Vérification des catégories configurées
-        let showModal = wcSidesModal.categories.some(category => 
-            productClasses.some(prodClass => prodClass.includes(category))
-        );
+    let lastClickedProductId = null;
 
-        if (showModal) {
-            $('#wc-sides-modal').fadeIn();
+    // Capture le clic sur le bouton "Ajouter au panier"
+    $(document).on('click', '.add_to_cart_button', function() {
+        lastClickedProductId = $(this).data('product_id');
+    });
+
+    // Déclenche l'appel AJAX après ajout au panier
+    $(document.body).on('added_to_cart', async function() {
+        if (!lastClickedProductId) return;
+
+        try {
+            const response = await fetch('/wp-admin/admin-ajax.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    action: 'wsm_get_product_category',
+                    product_id: lastClickedProductId,
+                    nonce: wcSidesModal.nonce
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success && data.data.show_modal) {
+                $('#wc-sides-modal').fadeIn();
+            }
+
+        } catch (error) {
+            console.error('Erreur lors de la vérification des catégories :', error);
         }
+
+        lastClickedProductId = null;
     });
 
     // Fermeture du modal au clic sur la croix
