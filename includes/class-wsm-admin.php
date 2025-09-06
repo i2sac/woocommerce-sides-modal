@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 class WSM_Admin {
     private $options;
+    private $capability = 'edit_posts'; // Permission minimale requise
 
     public function __construct() {
         add_action('admin_menu', array($this, 'add_plugin_page'));
@@ -14,16 +15,20 @@ class WSM_Admin {
     }
 
     public function add_plugin_page() {
-        add_options_page(
-            'WooCommerce Sides Modal',
-            'WC Sides Modal',
-            'manage_options',
-            'wc-sides-modal',
-            array($this, 'create_admin_page')
+        add_submenu_page(
+            'woocommerce',           // Parent menu (WooCommerce)
+            'WooCommerce Sides Modal', // Page title
+            'Sides Modal',           // Menu title
+            $this->capability,       // Capability
+            'wc-sides-modal',       // Menu slug
+            array($this, 'create_admin_page') // Callback
         );
     }
 
     public function create_admin_page() {
+        if (!current_user_can($this->capability)) {
+            wp_die(__('Vous n\'avez pas les permissions suffisantes pour accéder à cette page.'));
+        }
         ?>
         <div class="wrap">
             <h1>WooCommerce Sides Modal</h1>
