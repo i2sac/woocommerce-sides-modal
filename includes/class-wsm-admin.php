@@ -1,11 +1,14 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
-class WSM_Admin {
+class WSM_Admin
+{
     private $options;
-    private $capability = 'edit_posts'; // Permission minimale requise
+    private $capability = 'manage_woocommerce'; // Permission WooCommerce requise
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('admin_menu', array($this, 'add_plugin_page'));
         add_action('admin_init', array($this, 'page_init'));
         $this->options = get_option(WSM_OPTIONS_KEY, array(
@@ -14,7 +17,8 @@ class WSM_Admin {
         ));
     }
 
-    public function add_plugin_page() {
+    public function add_plugin_page()
+    {
         add_submenu_page(
             'woocommerce',           // Parent menu (WooCommerce)
             'WooCommerce Sides Modal', // Page title
@@ -25,7 +29,8 @@ class WSM_Admin {
         );
     }
 
-    public function create_admin_page() {
+    public function create_admin_page()
+    {
         if (!current_user_can($this->capability)) {
             wp_die(__('Vous n\'avez pas les permissions suffisantes pour accéder à cette page.'));
         }
@@ -43,7 +48,8 @@ class WSM_Admin {
         <?php
     }
 
-    public function page_init() {
+    public function page_init()
+    {
         register_setting(
             'wsm_option_group',
             WSM_OPTIONS_KEY,
@@ -74,25 +80,28 @@ class WSM_Admin {
         );
     }
 
-    public function section_info() {
+    public function section_info()
+    {
         echo 'Configurez les paramètres du modal ici.';
     }
 
-    public function sanitize($input) {
+    public function sanitize($input)
+    {
         $new_input = array();
-        
-        $new_input['categories'] = isset($input['categories']) 
-            ? sanitize_text_field($input['categories']) 
+
+        $new_input['categories'] = isset($input['categories'])
+            ? sanitize_text_field($input['categories'])
             : '';
 
-        $new_input['shortcode'] = isset($input['shortcode']) 
-            ? sanitize_text_field($input['shortcode']) 
+        $new_input['shortcode'] = isset($input['shortcode'])
+            ? sanitize_text_field($input['shortcode'])
             : '';
 
         return $new_input;
     }
 
-    public function categories_callback() {
+    public function categories_callback()
+    {
         printf(
             '<input type="text" id="categories" name="%s[categories]" value="%s" class="regular-text" />',
             WSM_OPTIONS_KEY,
@@ -101,7 +110,8 @@ class WSM_Admin {
         echo '<p class="description">Entrez les slugs des catégories séparés par des virgules (ex: senegalese-meals,african-meals)</p>';
     }
 
-    public function shortcode_callback() {
+    public function shortcode_callback()
+    {
         printf(
             '<input type="text" id="shortcode" name="%s[shortcode]" value="%s" class="regular-text" />',
             WSM_OPTIONS_KEY,
