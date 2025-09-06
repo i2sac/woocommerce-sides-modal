@@ -3,6 +3,11 @@
 
     let lastClickedProductId = null;
 
+    // Gestion de l'overflow du body
+    function setBodyOverflow(hidden) {
+        document.body.style.overflow = hidden ? 'hidden' : 'auto';
+    }
+
     // Capture le clic sur le bouton "Ajouter au panier"
     $(document).on('click', '.add_to_cart_button', function () {
         lastClickedProductId = $(this).data('product_id');
@@ -26,18 +31,21 @@
                 });
 
                 const text = await response.text();
-
-                const categoriesArray = text
+                
+                // Conversion des catégories du produit en minuscules
+                const productCategories = text
                     .split(',')
                     .map(cat => cat.trim().toLowerCase())
                     .filter(cat => cat.length > 0);
 
-                const hasMatchingCategory = wcSidesModal.categories.some(category =>
-                    categoriesArray.includes(category.toLowerCase())
+                // Vérification si une des catégories configurées correspond
+                const hasSidesCategory = wcSidesModal.categories.some(targetCategory => 
+                    productCategories.includes(targetCategory.toLowerCase())
                 );
 
-                if (hasMatchingCategory) {
+                if (hasSidesCategory) {
                     $('#wc-sides-modal').fadeIn();
+                    setBodyOverflow(true);
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des catégories :', error);
@@ -48,6 +56,7 @@
     // Fermeture du modal au clic sur la croix
     $(document).on('click', '.wc-sides-modal-close', function () {
         $('#wc-sides-modal').fadeOut();
+        setBodyOverflow(false);
     });
 
     // Fermeture du modal au clic en dehors
@@ -55,6 +64,7 @@
         let $modal = $('#wc-sides-modal');
         if ($(event.target).is($modal)) {
             $modal.fadeOut();
+            setBodyOverflow(false);
         }
     });
 
@@ -62,6 +72,7 @@
     $(document).on('keyup', function (event) {
         if (event.key === 'Escape') {
             $('#wc-sides-modal').fadeOut();
+            setBodyOverflow(false);
         }
     });
 

@@ -34,9 +34,13 @@ class WSM_Loader {
             true
         );
 
-        $categories = array_map('trim', explode(',', $this->options['categories']));
+        $categories = !empty($this->options['categories']) 
+            ? array_map('trim', explode(',', $this->options['categories'])) 
+            : array();
+            
         wp_localize_script('wc-sides-modal', 'wcSidesModal', array(
-            'categories' => array_map('strtolower', $categories)
+            'categories' => array_map('strtolower', $categories),
+            'ajaxurl' => admin_url('admin-ajax.php')
         ));
     }
 
@@ -63,7 +67,10 @@ class WSM_Loader {
         ?>
         <div id="wc-sides-modal" class="wc-sides-modal" style="display: none;">
             <div class="wc-sides-modal-content">
-                <span class="wc-sides-modal-close">&times;</span>
+                <div class="wc-sides-modal-header">
+                    <h2 class="wc-sides-modal-title">Add Sides</h2>
+                    <span class="wc-sides-modal-close">&times;</span>
+                </div>
                 <div class="wc-sides-modal-body">
                     <?php echo do_shortcode($this->options['shortcode']); ?>
                 </div>
